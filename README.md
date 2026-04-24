@@ -36,7 +36,7 @@
 - 🐍 Daily drivers: **Python & Java** — Selenium, Playwright, pytest, TestNG
 - ☁️ **Google Cloud certified ×5** — 24/7 headless cloud deployments
 - 🎓 **Interview Kickstart** grad — CS fundamentals + system design sharpened
-- 📍 **Santa Clara, CA** · Bay Area or fully remote
+- 📍 **Bay Area, CA** · open to remote
 - 🟢 **Actively interviewing** — [let's talk →](https://oscar-leung.github.io/#contact)
 
 <br clear="right"/>
