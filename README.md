@@ -30,10 +30,12 @@
 
 ### 👨‍💻 About Me
 
-- 💼 **5+ years** in software engineering & QA automation
-- 🛸 **Maxar Technologies** — automated spacecraft systems validation (TCL, reduced test time ~35%)
-- 📱 **Location Labs / Avast** — quality for AT&T carrier apps at scale (500+ Jira tickets, 330+ defects caught)
-- 🐍 Daily drivers: **Python & Java** — Selenium, Playwright, pytest, TestNG
+- 🎓 **B.S. Computer Science, Minor in Japanese** — San José State University, 2018
+- 💼 **5+ years** across aerospace, government & consumer tech QA / automation
+- 🛸 **Maxar Technologies** — spacecraft systems validation (TCL, ~35% test time reduction, NASA/CMMI)
+- 🏛️ **State of Illinois** — 300+ automated test cases, Salesforce + JMeter load testing
+- 📱 **Location Labs / Avast** — AT&T carrier apps at scale (500+ Jira, 330+ defects, Espresso/Appium)
+- 🐍 Daily drivers: **Python & Java** — Selenium, Playwright, pytest, TestNG, JMeter
 - ☁️ **Google Cloud certified ×5** — 24/7 headless cloud deployments
 - 🎓 **Interview Kickstart** grad — CS fundamentals + system design sharpened
 - 📍 **Bay Area, CA** · open to remote
@@ -72,10 +74,13 @@
 ![TestNG](https://img.shields.io/badge/TestNG-FF6600?style=flat-square&logoColor=white)
 ![Postman](https://img.shields.io/badge/Postman-FF6C37?style=flat-square&logo=postman&logoColor=white)
 ![Appium](https://img.shields.io/badge/Appium-662D91?style=flat-square&logo=appium&logoColor=white)
+![Espresso](https://img.shields.io/badge/Espresso-34A853?style=flat-square&logo=android&logoColor=white)
+![JMeter](https://img.shields.io/badge/JMeter-D22128?style=flat-square&logo=apachejmeter&logoColor=white)
 
 **CI/CD & DevOps**<br/>
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)
 ![Jenkins](https://img.shields.io/badge/Jenkins-D24939?style=flat-square&logo=jenkins&logoColor=white)
+![TeamCity](https://img.shields.io/badge/TeamCity-000000?style=flat-square&logo=teamcity&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
 ![Git](https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black)
