@@ -21,6 +21,8 @@
 <a href="https://oscar-leung.netlify.app"><img src="https://img.shields.io/badge/Portfolio_v1-netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white" /></a>
 &nbsp;
 <a href="https://www.linkedin.com/in/oscar-leung/"><img src="https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" /></a>
+&nbsp;
+<a href="https://www.youtube.com/@oscarleung7579"><img src="https://img.shields.io/badge/YouTube-Channel-FF0000?style=for-the-badge&logo=youtube&logoColor=white" /></a>
 
 </div>
 
