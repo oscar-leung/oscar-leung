@@ -1,6 +1,11 @@
 // AI strategies and the in-game advisor. Pure logic — no DOM access.
 // Works in both the browser and Node (via the bottom export shim).
 
+// Use the state's seeded RNG when present (for reproducible games / tests).
+function rngOf(state) {
+  return (state && typeof state.rng === "function") ? state.rng : Math.random;
+}
+
 // ---------- Action helpers ----------
 
 // Returns all legal actions for the current player.
@@ -181,7 +186,7 @@ const STRATEGIES = {
     choose(state) {
       const acts = legalActions(state);
       if (!acts.length) return null;
-      return acts[Math.floor(Math.random() * acts.length)];
+      return acts[Math.floor(rngOf(state)() * acts.length)];
     },
   },
 
@@ -313,7 +318,7 @@ const STRATEGIES = {
       const scored = acts.map((a) => ({ a, score: scoreAction(state, a, weights) }));
       scored.sort((x, y) => y.score - x.score);
       const top = scored.filter((s) => s.score >= scored[0].score - 0.05);
-      return top[Math.floor(Math.random() * top.length)].a;
+      return top[Math.floor(rngOf(state)() * top.length)].a;
     },
   },
 
@@ -360,22 +365,25 @@ function positionScore(state, playerIdx) {
   return s;
 }
 
+// Tuned via random search against {greedy, points, nobleRusher} mix
+// (60 rounds × 25 games each). Improves avg win rate vs. mix from 69% → 89%
+// on a held-out seed. See tests/train_defaults.js to retrain.
 const DEFAULT_WEIGHTS = {
-  buyBase: 5,
-  buyPoints: 2.5,
-  buyNobleBonus: 0.8,
-  buyTier: 0.4,
-  buyReservedBonus: 0.2,
-  reserveBase: 0.4,
-  reservePoints: 0.5,
-  reserveLockHigh: 1.5,
-  reserveBlock: 1.0,
-  reserveGoldBonus: 0.3,
-  takeBase: 0.6,
-  takePerColor: 0.15,
-  takeMatch: 0.5,
-  take2Match: 0.5,
-  overTokenPenalty: 0.4,
+  buyBase: 3.226,
+  buyPoints: 1.814,
+  buyNobleBonus: 1.050,
+  buyTier: 0.171,
+  buyReservedBonus: 0.534,
+  reserveBase: 0.288,
+  reservePoints: 0.486,
+  reserveLockHigh: 0.804,
+  reserveBlock: 1.082,
+  reserveGoldBonus: 0.356,
+  takeBase: 0.271,
+  takePerColor: 1.164,
+  takeMatch: 1.513,
+  take2Match: 0.563,
+  overTokenPenalty: 0.506,
 };
 
 function scoreAction(state, action, w) {

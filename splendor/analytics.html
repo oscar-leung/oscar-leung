@@ -219,6 +219,28 @@
   </section>
 
   <section class="panel">
+    <h2>Strategic Insights</h2>
+    <p class="strategy-desc">Self-play a strategy many times and surface findings: first-mover advantage, action mix shifting from early to late game, which bonus colors winners stack, and tier-buy timing.</p>
+
+    <div class="form-row">
+      <label>Strategy
+        <select id="insights-strategy"></select>
+      </label>
+      <label>Players
+        <select id="insights-players">
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </label>
+      <label>Games <input type="number" id="insights-games" value="100" min="20" max="2000" step="10" /></label>
+      <button id="run-insights" class="primary-btn small">Run Analysis</button>
+    </div>
+    <div class="progress-bar"><div id="insights-progress"></div></div>
+    <div id="insights-results"></div>
+  </section>
+
+  <section class="panel">
     <h2>Single-Game Replay</h2>
     <p class="strategy-desc">Step through one AI-vs-AI game move by move with on-screen reasoning.</p>
     <div class="form-row">

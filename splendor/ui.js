@@ -2,6 +2,8 @@
 // Communicates with the engine in game.js and AI in ai.js.
 
 (function () {
+  const STORAGE_KEY = "splendor.savedGame.v1";
+
   // ---------- DOM refs ----------
   const $ = (id) => document.getElementById(id);
 
@@ -28,8 +30,64 @@
   let discardMode = false;
   let discardTarget = TOKEN_CAP;
 
+  // ---------- Persistence ----------
+  function saveGame() {
+    if (!state || state.gameOver) return;
+    try {
+      const { rng, ...serializable } = state;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(serializable));
+    } catch (e) {
+      // Silent: localStorage may be disabled (private mode, quotas)
+    }
+  }
+
+  function clearSave() {
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  }
+
+  function loadSave() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || !Array.isArray(parsed.players) || parsed.gameOver) return null;
+      // rng is never persisted; re-create from seed for any future shuffle (none expected mid-game)
+      if (parsed.seed != null && typeof mulberry32 === "function") parsed.rng = mulberry32(parsed.seed);
+      return parsed;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function maybeShowResumeButton() {
+    const saved = loadSave();
+    const setupCard = document.querySelector(".setup-card");
+    const existing = $("resume-btn");
+    if (existing) existing.remove();
+    if (!saved) return;
+    const resume = document.createElement("button");
+    resume.id = "resume-btn";
+    resume.className = "primary-btn";
+    resume.style.marginTop = "10px";
+    resume.style.background = "linear-gradient(180deg, #4ea865, #2d6940)";
+    resume.textContent = `Resume saved game · turn ${saved.turnNumber} · ${saved.players.map((p) => p.name).join(" vs ")}`;
+    resume.addEventListener("click", () => {
+      state = saved;
+      pendingTake = [];
+      discardMode = false;
+      setupScreen.classList.add("hidden");
+      gameScreen.classList.remove("hidden");
+      setStatus(`${state.players[state.current].name}'s turn.`);
+      render();
+      maybeRunAI();
+    });
+    setupCard.insertBefore(resume, startBtn);
+  }
+  maybeShowResumeButton();
+
   // ---------- Setup ----------
   startBtn.addEventListener("click", () => {
+    clearSave();
     const mode = document.querySelector('input[name="mode"]:checked').value;
     const playerName = $("player-name").value.trim() || "Player 1";
     let players, vsAI = false;
@@ -50,9 +108,11 @@
 
   newGameBtn.addEventListener("click", () => {
     if (aiTurnTimer) clearTimeout(aiTurnTimer);
+    clearSave();
     state = null;
     gameScreen.classList.add("hidden");
     setupScreen.classList.remove("hidden");
+    maybeShowResumeButton();
   });
 
   confirmTakeBtn.addEventListener("click", () => {
@@ -69,6 +129,41 @@
     pendingTake = [];
     render();
   });
+
+  // Global keyboard shortcuts on the live board
+  document.addEventListener("keydown", (e) => {
+    if (gameScreen.classList.contains("hidden")) return;
+    if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "SELECT" || e.target.tagName === "TEXTAREA")) return;
+    if (state && state.players[state.current].isAI) return;
+    const key = e.key.toLowerCase();
+    if (key === "enter" && canConfirmTake()) { e.preventDefault(); confirmTakeBtn.click(); }
+    else if (key === "escape" && pendingTake.length) { e.preventDefault(); cancelTakeBtn.click(); }
+    else if (key === "h") { e.preventDefault(); showHint(); }
+    else if (key === "?") { e.preventDefault(); showShortcuts(); }
+    else if (["1","2","3","4","5"].includes(key)) {
+      const colors = ["white","blue","green","red","black"];
+      const c = colors[parseInt(key, 10) - 1];
+      if (c && canAddToTake(c) && (state.supply[c] || 0) > 0) {
+        e.preventDefault();
+        onSupplyClick(c);
+      }
+    }
+  });
+
+  function showShortcuts() {
+    showModal({
+      title: "Keyboard Shortcuts",
+      body: `<table style="width:100%; font-size:13px;">
+        <tr><td><kbd>1-5</kbd></td><td>select gem (white/blue/green/red/black)</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>confirm take</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>clear pending take</td></tr>
+        <tr><td><kbd>H</kbd></td><td>show move hint</td></tr>
+        <tr><td><kbd>?</kbd></td><td>this dialog</td></tr>
+        <tr><td><kbd>Tab</kbd></td><td>focus gems and cards; <kbd>Enter</kbd> activates</td></tr>
+      </table>`,
+      actions: [{ label: "Close", primary: true }],
+    });
+  }
 
   // ---------- Action wrappers ----------
 
@@ -133,6 +228,7 @@
     renderPlayers();
     renderTurnIndicator();
     renderLog();
+    saveGame();
   }
 
   function renderTurnIndicator() {
@@ -169,8 +265,14 @@
       c.textContent = cnt;
       div.append(gem, lbl, c);
 
-      if (color !== "gold" && isHumanTurn && !discardMode) {
+      div.setAttribute("role", "listitem");
+      div.setAttribute("aria-label", `${color}: ${cnt} available${isSelected ? " (selected)" : ""}`);
+      if (color !== "gold" && isHumanTurn && !discardMode && cnt > 0) {
+        div.tabIndex = 0;
         div.addEventListener("click", () => onSupplyClick(color));
+        div.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSupplyClick(color); }
+        });
       }
       supplyEl.appendChild(div);
     }
@@ -341,8 +443,16 @@
     }
     wrap.append(head, cost);
 
+    wrap.setAttribute("role", "listitem");
+    const ptsTxt = card.points ? `, ${card.points} prestige` : "";
+    wrap.setAttribute("aria-label",
+      `Tier ${card.tier} ${card.bonus} card${ptsTxt}, cost ${COLORS.map((c) => `${card.cost[c]||0} ${c}`).filter((s) => !s.startsWith("0 ")).join(", ") || "none"}${aff.canAfford ? "; affordable" : ""}`);
     if (isHumanTurn) {
+      wrap.tabIndex = 0;
       wrap.addEventListener("click", () => showCardActions(card, source, wrap));
+      wrap.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); showCardActions(card, source, wrap); }
+      });
     }
     return wrap;
   }
@@ -583,6 +693,14 @@
       advisorBtn.style.marginLeft = "8px";
       advisorBtn.addEventListener("click", showMoveScores);
       statusBar.appendChild(advisorBtn);
+
+      const shortcutBtn = document.createElement("button");
+      shortcutBtn.className = "ghost-btn small";
+      shortcutBtn.textContent = "⌨ Shortcuts";
+      shortcutBtn.style.marginLeft = "8px";
+      shortcutBtn.title = "Keyboard shortcuts";
+      shortcutBtn.addEventListener("click", showShortcuts);
+      statusBar.appendChild(shortcutBtn);
     }
   }
 
@@ -646,6 +764,7 @@
   }
 
   function showGameOver() {
+    clearSave();
     const w = state.winner;
     const board = state.players
       .map((p) => `<tr>

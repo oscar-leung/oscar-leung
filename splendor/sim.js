@@ -24,7 +24,8 @@
       throw new Error(`Splendor supports 2-4 players; got ${strategies.length}`);
     }
     const playerNames = strategies.map((s, i) => `${s.label || ("S" + i)}-${i}`);
-    const state = createGame({ playerNames, vsAI: false });
+    const state = createGame({ playerNames, vsAI: false, seed: opts.seed });
+    const actionLog = opts.collectActions ? [] : null;
     const stats = {
       turns: 0,
       winner: null,
@@ -46,6 +47,22 @@
         continue;
       }
       stats.perPlayer[idx].actions[action.type === "take2" ? "take2" : action.type]++;
+      if (actionLog) {
+        let cardBonus = null;
+        if (action.type === "buy") {
+          const card = action.source === "reserved"
+            ? state.players[idx].reserved.find((c) => c.id === action.cardId)
+            : state.market[action.tier].find((c) => c.id === action.cardId);
+          if (card) cardBonus = card.bonus;
+        }
+        actionLog.push({
+          turn: state.turnNumber,
+          seat: idx,
+          type: action.type,
+          tier: action.tier || null,
+          bonus: cardBonus,
+        });
+      }
       const ok = applyAction(state, action, { autoDiscard: true });
       stats.turns++;
       if (!ok) {
@@ -64,11 +81,12 @@
       stats.finalPoints[i] = p.points;
     });
     stats.winner = state.winner.id;
+    if (actionLog) stats.actionLog = actionLog;
     return stats;
   }
 
   // ---------- Run a match (N games) ----------
-  function runMatch(strategies, n = 100, onProgress = null) {
+  function runMatch(strategies, n = 100, onProgress = null, opts = {}) {
     const results = strategies.map((s) => ({
       label: s.label,
       wins: 0, totalPoints: 0, totalCards: 0, totalNobles: 0,
@@ -79,7 +97,9 @@
       // Rotate seat to fairly evaluate first-move advantage across runs
       const rot = g % strategies.length;
       const seat = strategies.slice(rot).concat(strategies.slice(0, rot));
-      const result = runGame(seat);
+      // Per-game seed: deterministic when caller provides a base seed; otherwise random
+      const gameSeed = opts.seed != null ? ((opts.seed >>> 0) ^ (g * 0x9E3779B1)) >>> 0 : undefined;
+      const result = runGame(seat, { seed: gameSeed });
       turnHistogram.push(result.turns);
       for (let i = 0; i < seat.length; i++) {
         const original = strategies.indexOf(seat[i]);
@@ -145,6 +165,75 @@
       const noise = (Math.random() * 2 - 1) * scale * Math.max(0.5, Math.abs(out[k]));
       out[k] = Math.max(0, out[k] + noise);
     }
+    return out;
+  }
+
+  // ---------- Insights: data-driven strategic findings ----------
+  // Plays N self-play games with the same strategy and aggregates:
+  //   - first-move advantage (seat-0 win rate vs others)
+  //   - average game length
+  //   - action mix by turn quartile (early/mid/late game)
+  //   - which bonus colors get bought most frequently among winners
+  function analyzeInsights(strategy, n = 100, opts = {}) {
+    const playerCount = opts.playerCount || 2;
+    const strategies = Array.from({ length: playerCount }, () => ({
+      label: strategy.label, choose: strategy.choose, weights: strategy.weights,
+    }));
+    const seatWins = Array(playerCount).fill(0);
+    const turnLengths = [];
+    const quartileMix = { early: { take: 0, take2: 0, reserve: 0, buy: 0 },
+                          mid:   { take: 0, take2: 0, reserve: 0, buy: 0 },
+                          late:  { take: 0, take2: 0, reserve: 0, buy: 0 } };
+    const winnerBonusCounts = { white: 0, blue: 0, green: 0, red: 0, black: 0 };
+    const tierBuysByQuartile = { early: { 1: 0, 2: 0, 3: 0 }, mid: { 1: 0, 2: 0, 3: 0 }, late: { 1: 0, 2: 0, 3: 0 } };
+
+    for (let g = 0; g < n; g++) {
+      const seed = opts.seed != null ? ((opts.seed >>> 0) ^ (g * 0x9E3779B1)) >>> 0 : undefined;
+      const result = runGame(strategies, { seed, collectActions: true });
+      seatWins[result.winner]++;
+      turnLengths.push(result.turns);
+
+      const maxTurn = Math.max(1, ...result.actionLog.map((a) => a.turn));
+      for (const a of result.actionLog) {
+        const q = a.turn / maxTurn;
+        const bucket = q < 0.34 ? "early" : q < 0.67 ? "mid" : "late";
+        const t = a.type === "take2" ? "take2" : a.type;
+        if (quartileMix[bucket][t] != null) quartileMix[bucket][t]++;
+        if (a.type === "buy" && a.tier) tierBuysByQuartile[bucket][a.tier]++;
+      }
+      // Winner bonus distribution: re-run a parallel game to grab final state isn't easy here;
+      // instead infer from actionLog buys made by the winner.
+      const winnerBuys = result.actionLog.filter((a) => a.type === "buy" && a.seat === result.winner && a.bonus);
+      for (const a of winnerBuys) winnerBonusCounts[a.bonus]++;
+    }
+
+    const seatRates = seatWins.map((w) => w / n);
+    return {
+      games: n,
+      playerCount,
+      seatWinRates: seatRates,
+      firstMoverAdvantage: seatRates[0] - (seatRates.slice(1).reduce((a, b) => a + b, 0) / (playerCount - 1)),
+      avgTurns: turnLengths.reduce((a, b) => a + b, 0) / n,
+      actionMixByQuartile: normalizeMix(quartileMix),
+      tierBuysByQuartile,
+      winnerBonusDistribution: normalizeCounts(winnerBonusCounts),
+    };
+  }
+
+  function normalizeMix(mix) {
+    const out = {};
+    for (const k of Object.keys(mix)) {
+      const total = Object.values(mix[k]).reduce((a, b) => a + b, 0) || 1;
+      out[k] = {};
+      for (const t of Object.keys(mix[k])) out[k][t] = mix[k][t] / total;
+    }
+    return out;
+  }
+
+  function normalizeCounts(counts) {
+    const total = Object.values(counts).reduce((a, b) => a + b, 0) || 1;
+    const out = {};
+    for (const k of Object.keys(counts)) out[k] = counts[k] / total;
     return out;
   }
 
@@ -230,7 +319,10 @@
 
   // ---------- Exports ----------
 
-  const api = { runGame, runMatch, trainBalanced, buildStrategy, perturbWeights, TURN_HARD_LIMIT };
+  const api = {
+    runGame, runMatch, trainBalanced, buildStrategy, perturbWeights,
+    analyzeInsights, TURN_HARD_LIMIT,
+  };
 
   if (isNode) {
     module.exports = api;

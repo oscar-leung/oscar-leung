@@ -4,10 +4,22 @@ function emptyGems() {
   return { white: 0, blue: 0, green: 0, red: 0, black: 0, gold: 0 };
 }
 
-function shuffle(arr) {
+// Mulberry32 — a small, fast, well-distributed PRNG. Seedable for reproducible games and tests.
+function mulberry32(seed) {
+  let a = (seed >>> 0) || 1;
+  return function rng() {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function shuffle(arr, rng) {
+  const r = rng || Math.random;
   const out = arr.slice();
   for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(r() * (i + 1));
     [out[i], out[j]] = [out[j], out[i]];
   }
   return out;
@@ -52,8 +64,16 @@ function affordabilityFor(player, card) {
 function createGame(options) {
   const { playerNames, vsAI } = options;
   const n = playerNames.length;
+  if (n < 2 || n > 4) throw new Error(`Splendor supports 2-4 players; got ${n}`);
+
+  const seed = options.seed != null
+    ? (options.seed >>> 0)
+    : (Math.floor(Math.random() * 0x100000000) >>> 0);
+  const rng = mulberry32(seed);
 
   const state = {
+    seed,
+    rng, // not serialized through cloneState (JSON drops functions); only used in setup
     players: playerNames.map((name, i) => ({
       id: i,
       name,
@@ -73,12 +93,12 @@ function createGame(options) {
       return s;
     })(),
     decks: {
-      1: shuffle(ALL_CARDS.filter((c) => c.tier === 1)),
-      2: shuffle(ALL_CARDS.filter((c) => c.tier === 2)),
-      3: shuffle(ALL_CARDS.filter((c) => c.tier === 3)),
+      1: shuffle(ALL_CARDS.filter((c) => c.tier === 1), rng),
+      2: shuffle(ALL_CARDS.filter((c) => c.tier === 2), rng),
+      3: shuffle(ALL_CARDS.filter((c) => c.tier === 3), rng),
     },
     market: { 1: [], 2: [], 3: [] },
-    nobles: shuffle(NOBLES).slice(0, NOBLES_PER_GAME[n] || 3),
+    nobles: shuffle(NOBLES, rng).slice(0, NOBLES_PER_GAME[n] || 3),
     log: [],
     turnNumber: 1,
     finalRound: false,
@@ -292,9 +312,9 @@ function finishGame(state) {
 
 if (typeof module !== "undefined" && module.exports) {
   const __exports = {
-    emptyGems, shuffle, sumGems, totalTokens, cardBonusCount, allBonuses,
-    affordabilityFor, createGame, log, takeGems, discardTokens, reserveCard,
-    buyCard, checkNobles, claimNoble, endTurn, finishGame,
+    emptyGems, mulberry32, shuffle, sumGems, totalTokens, cardBonusCount,
+    allBonuses, affordabilityFor, createGame, log, takeGems, discardTokens,
+    reserveCard, buyCard, checkNobles, claimNoble, endTurn, finishGame,
   };
   Object.assign(global, __exports);
   module.exports = __exports;

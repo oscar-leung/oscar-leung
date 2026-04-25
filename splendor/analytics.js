@@ -245,6 +245,148 @@
     </svg>`;
   }
 
+  // ---------- Insights ----------
+  const insightsSel = $("insights-strategy");
+  for (const k of STRAT_NAMES) {
+    const opt = document.createElement("option");
+    opt.value = k;
+    opt.textContent = STRATEGIES[k].name;
+    insightsSel.appendChild(opt);
+  }
+  insightsSel.value = "balanced";
+
+  $("run-insights").addEventListener("click", async () => {
+    const strat = SplendorSim.buildStrategy(insightsSel.value);
+    const players = parseInt($("insights-players").value, 10);
+    const games = parseInt($("insights-games").value, 10);
+    const progress = $("insights-progress");
+    const target = $("insights-results");
+    target.innerHTML = "<p style='color:var(--text-dim);'>Running self-play…</p>";
+    progress.style.width = "0%";
+
+    // Run in chunks to keep UI responsive
+    const chunkSize = 25;
+    const aggregate = {
+      seatWins: Array(players).fill(0),
+      turnLengths: [],
+      mix: { early: { take: 0, take2: 0, reserve: 0, buy: 0 },
+             mid:   { take: 0, take2: 0, reserve: 0, buy: 0 },
+             late:  { take: 0, take2: 0, reserve: 0, buy: 0 } },
+      tiers: { early: { 1: 0, 2: 0, 3: 0 }, mid: { 1: 0, 2: 0, 3: 0 }, late: { 1: 0, 2: 0, 3: 0 } },
+      winnerBonus: { white: 0, blue: 0, green: 0, red: 0, black: 0 },
+    };
+    let done = 0;
+    function runChunk() {
+      const n = Math.min(chunkSize, games - done);
+      if (n === 0) {
+        progress.style.width = "100%";
+        renderInsights(target, aggregate, players, games);
+        return;
+      }
+      const partial = SplendorSim.analyzeInsights(strat, n, { playerCount: players, seed: 0xCAFE0000 + done });
+      // merge
+      for (let i = 0; i < players; i++) aggregate.seatWins[i] += partial.seatWinRates[i] * n;
+      aggregate.turnLengths.push(partial.avgTurns);
+      for (const q of ["early","mid","late"]) {
+        for (const k of Object.keys(aggregate.mix[q])) aggregate.mix[q][k] += partial.actionMixByQuartile[q][k] * n;
+        for (const t of [1,2,3]) aggregate.tiers[q][t] += partial.tierBuysByQuartile[q][t];
+      }
+      for (const c of Object.keys(aggregate.winnerBonus)) aggregate.winnerBonus[c] += partial.winnerBonusDistribution[c] * n;
+      done += n;
+      progress.style.width = (done / games * 100).toFixed(1) + "%";
+      setTimeout(runChunk, 0);
+    }
+    runChunk();
+  });
+
+  function renderInsights(target, agg, players, games) {
+    const seatRates = agg.seatWins.map((w) => w / games);
+    const seatRows = seatRates.map((wr, i) =>
+      `<tr><td>Seat ${i + 1}${i === 0 ? " (first)" : ""}</td>
+        <td><div class="winbar"><div style="width:${(wr*100).toFixed(1)}%"></div><span>${(wr*100).toFixed(1)}%</span></div></td></tr>`
+    ).join("");
+    const fma = seatRates[0] - (seatRates.slice(1).reduce((a, b) => a + b, 0) / (players - 1));
+    const fmaTxt = fma > 0.05 ? `<strong style="color:var(--accent);">First-move advantage: +${(fma*100).toFixed(1)} pp</strong>`
+                  : fma < -0.05 ? `<strong style="color:var(--danger);">First-mover penalty: ${(fma*100).toFixed(1)} pp</strong>`
+                  : `<strong>Seating roughly fair (Δ ${(fma*100).toFixed(1)} pp).</strong>`;
+
+    const mixRow = (q, label) => {
+      const m = agg.mix[q];
+      const total = Object.values(m).reduce((a, b) => a + b, 0) || 1;
+      const norm = { take: m.take/total, take2: m.take2/total, reserve: m.reserve/total, buy: m.buy/total };
+      return `<tr><td>${label}</td><td>
+        <div class="action-bar">
+          <div style="width:${(norm.buy*100).toFixed(1)}%; background:${STRAT_COLORS.buy};"></div>
+          <div style="width:${(norm.take*100).toFixed(1)}%; background:${STRAT_COLORS.take};"></div>
+          <div style="width:${(norm.take2*100).toFixed(1)}%; background:${STRAT_COLORS.take2};"></div>
+          <div style="width:${(norm.reserve*100).toFixed(1)}%; background:${STRAT_COLORS.reserve};"></div>
+        </div>
+        <div class="legend">
+          <span>Buy ${(norm.buy*100).toFixed(0)}%</span>
+          <span>Take3 ${(norm.take*100).toFixed(0)}%</span>
+          <span>Take2 ${(norm.take2*100).toFixed(0)}%</span>
+          <span>Reserve ${(norm.reserve*100).toFixed(0)}%</span>
+        </div>
+      </td></tr>`;
+    };
+
+    const tierRow = (q, label) => {
+      const t = agg.tiers[q];
+      const total = (t[1] + t[2] + t[3]) || 1;
+      return `<tr><td>${label}</td><td>
+        <div class="action-bar" style="width:200px;">
+          <div style="width:${(t[1]/total*100).toFixed(1)}%; background:#4ea865;" title="Tier 1"></div>
+          <div style="width:${(t[2]/total*100).toFixed(1)}%; background:#38bdf8;" title="Tier 2"></div>
+          <div style="width:${(t[3]/total*100).toFixed(1)}%; background:#f4c430;" title="Tier 3"></div>
+        </div>
+        <div class="legend">
+          <span>T1 ${(t[1]/total*100).toFixed(0)}%</span>
+          <span>T2 ${(t[2]/total*100).toFixed(0)}%</span>
+          <span>T3 ${(t[3]/total*100).toFixed(0)}%</span>
+        </div>
+      </td></tr>`;
+    };
+
+    const totalBonus = Object.values(agg.winnerBonus).reduce((a, b) => a + b, 0) || 1;
+    const colorBars = ["white","blue","green","red","black"].map((c) => {
+      const pct = agg.winnerBonus[c] / totalBonus * 100;
+      const bg = c === "white" ? "#ece7d8" : c === "blue" ? "#2a5ca8" : c === "green" ? "#2e8a55" : c === "red" ? "#b83a32" : "#1a1a1f";
+      return `<tr><td style="text-transform:capitalize;">${c}</td>
+        <td><div class="winbar"><div style="width:${pct.toFixed(1)}%; background:${bg};"></div><span style="color:${c==='white'?'#222':'#fff'};">${pct.toFixed(1)}%</span></div></td></tr>`;
+    }).join("");
+
+    const turnAvg = agg.turnLengths.reduce((a, b) => a + b, 0) / agg.turnLengths.length;
+
+    target.innerHTML = `
+      <div style="margin-top:14px;">
+        <h3>Findings (${games} games, ${players}-player self-play)</h3>
+        <p>${fmaTxt}</p>
+        <p>Average game length: <strong>${turnAvg.toFixed(1)}</strong> player-turns.</p>
+
+        <h4 style="margin-top:18px;">Seat win rates</h4>
+        <table class="stats"><tbody>${seatRows}</tbody></table>
+
+        <h4 style="margin-top:18px;">Action mix by game phase</h4>
+        <table class="stats"><thead><tr><th>Phase</th><th>Mix (Buy / Take3 / Take2 / Reserve)</th></tr></thead><tbody>
+          ${mixRow("early", "Early third")}
+          ${mixRow("mid", "Middle third")}
+          ${mixRow("late", "Late third")}
+        </tbody></table>
+
+        <h4 style="margin-top:18px;">Tier of cards bought, by phase</h4>
+        <table class="stats"><thead><tr><th>Phase</th><th>Buys (T1 / T2 / T3)</th></tr></thead><tbody>
+          ${tierRow("early", "Early")}
+          ${tierRow("mid", "Mid")}
+          ${tierRow("late", "Late")}
+        </tbody></table>
+
+        <h4 style="margin-top:18px;">Winner bonus-color distribution</h4>
+        <p style="font-size:12px; color:var(--text-dim);">Among games this strategy won, which bonus colors did it stack?</p>
+        <table class="stats"><tbody>${colorBars}</tbody></table>
+      </div>
+    `;
+  }
+
   // ---------- Replay ----------
   for (const id of ["replay-p1", "replay-p2"]) {
     const sel = $(id);

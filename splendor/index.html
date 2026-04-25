@@ -62,28 +62,28 @@
   </header>
 
   <div class="board">
-    <section class="supply-col">
+    <section class="supply-col" aria-label="Gem supply and pending take">
       <h3>Supply</h3>
-      <div id="gem-supply" class="gem-supply"></div>
+      <div id="gem-supply" class="gem-supply" role="list" aria-label="Available gem piles"></div>
       <div class="pending-panel">
         <div class="pending-label">Selected to take</div>
-        <div id="pending-gems" class="pending-gems"></div>
+        <div id="pending-gems" class="pending-gems" role="list" aria-live="polite"></div>
         <div class="pending-actions">
-          <button id="confirm-take" class="primary-btn small" disabled>Confirm Take</button>
-          <button id="cancel-take" class="ghost-btn small" disabled>Clear</button>
+          <button id="confirm-take" class="primary-btn small" disabled aria-label="Confirm take (Enter)">Confirm Take</button>
+          <button id="cancel-take" class="ghost-btn small" disabled aria-label="Clear pending take (Escape)">Clear</button>
         </div>
       </div>
     </section>
 
-    <section class="market-col">
-      <div id="nobles" class="nobles-row"></div>
-      <div id="tiers" class="tiers"></div>
+    <section class="market-col" aria-label="Card market and nobles">
+      <div id="nobles" class="nobles-row" role="list" aria-label="Available nobles"></div>
+      <div id="tiers" class="tiers" role="list" aria-label="Card tiers 1-3"></div>
     </section>
   </div>
 
-  <section id="players" class="players-row"></section>
+  <section id="players" class="players-row" aria-label="Player panels"></section>
 
-  <div id="status-bar" class="status-bar"></div>
+  <div id="status-bar" class="status-bar" role="status" aria-live="polite"></div>
 
   <div id="modal-root"></div>
   <div id="log" class="log"></div>
