@@ -10,6 +10,10 @@
 
 <br/>
 
+<em>If it's repetitive, I automate it. If it breaks, I find it first.</em>
+
+<br/><br/>
+
 <img src="https://komarev.com/ghpvc/?username=oscar-leung&style=for-the-badge&color=38bdf8&label=PROFILE+VIEWS" />
 &nbsp;
 <img src="https://img.shields.io/github/followers/oscar-leung?style=for-the-badge&color=38bdf8&labelColor=0d1117&label=FOLLOWERS" />
@@ -30,18 +34,27 @@
 
 <img align="right" width="400" src="https://github-readme-stats.vercel.app/api?username=oscar-leung&show_icons=true&theme=tokyonight&hide_border=true&include_all_commits=true&count_private=true&title_color=38bdf8&icon_color=38bdf8&text_color=94a3b8&bg_color=0d1117&rank_icon=github" />
 
-### 👨‍💻 About Me
+### <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Technologist.png" width="28" align="center" alt="Technologist"/> About Me
 
-- 🎓 **B.S. Computer Science, Minor in Japanese** — San José State University, 2018
-- 💼 **5+ years** across aerospace, government & consumer tech QA / automation
-- 🛸 **Maxar Technologies** — spacecraft systems validation (TCL, ~35% test time reduction, NASA/CMMI)
-- 🏛️ **State of Illinois** — 300+ automated test cases, Salesforce + JMeter load testing
-- 📱 **Location Labs / Avast** — AT&T carrier apps at scale (500+ Jira, 330+ defects, Espresso/Appium)
-- 🐍 Daily drivers: **Python & Java** — Selenium, Playwright, pytest, TestNG, JMeter
-- ☁️ **Google Cloud certified ×5** — 24/7 headless cloud deployments
-- 🎓 **Interview Kickstart** grad — CS fundamentals + system design sharpened
-- 📍 **Bay Area, CA** · open to remote
-- 🟢 **Actively interviewing** — [let's talk →](https://oscar-leung.github.io/#contact)
+<img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Graduation%20Cap.png" width="22" align="center" alt="Grad Cap"/> &nbsp;**B.S. Computer Science, Minor in Japanese** — San José State University, 2018
+
+<img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Briefcase.png" width="22" align="center" alt="Briefcase"/> &nbsp;**5+ years** across aerospace, government & consumer tech QA / automation
+
+<img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Rocket.png" width="22" align="center" alt="Rocket"/> &nbsp;**Maxar Technologies** — spacecraft validation (TCL, ~35% test time cut, NASA/CMMI)
+
+<img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Classical%20Building.png" width="22" align="center" alt="Building"/> &nbsp;**State of Illinois** — 300+ automated test cases, Salesforce + JMeter load testing
+
+<img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Mobile%20Phone.png" width="22" align="center" alt="Phone"/> &nbsp;**Location Labs / Avast** — AT&T carrier apps (500+ JIRA, 330+ defects, Espresso/Appium)
+
+<img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Snake.png" width="22" align="center" alt="Snake"/> &nbsp;Daily drivers: **Python & Java** — Selenium, Playwright, pytest, TestNG, JMeter
+
+<img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Cloud.png" width="22" align="center" alt="Cloud"/> &nbsp;**Google Cloud certified ×5** — 24/7 headless cloud deployments
+
+<img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Hammer%20and%20Wrench.png" width="22" align="center" alt="Tools"/> &nbsp;**Currently building:** job hunt automation suite + AI-powered QA tools
+
+<img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Round%20Pushpin.png" width="22" align="center" alt="Pin"/> &nbsp;**Bay Area, CA** · open to remote
+
+<img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Green%20Circle.png" width="22" align="center" alt="Green"/> &nbsp;**Actively interviewing** — [let's talk →](https://oscar-leung.github.io/#contact)
 
 <br clear="right"/>
 
@@ -126,20 +139,20 @@ Python + Selenium platform applying to **50+ jobs/day** across LinkedIn, Handsha
 </td>
 <td valign="top" width="50%">
 
-**🔌 Salesforce CRM Automation**<br/>
-Java + Selenium test suite built from scratch against **Salesforce CRM** using Page Object Model. TestNG runner, full regression suite, zero flakiness tolerance in production environment.
+**🔌 [QA Portfolio — SauceDemo E2E](https://github.com/oscar-leung/qa-portfolio)**<br/>
+Professional end-to-end test suite with **CI badge**: login → cart → checkout. pytest + **POM architecture**, data-driven parametrize, HTML failure reports with screenshots. GitHub Actions runs headless on every push.
 
-`Java` `Selenium` `TestNG` `Salesforce` `Page Object Model`
+`Python` `Selenium` `pytest` `GitHub Actions` `Page Object Model`
 
 </td>
 </tr>
 <tr>
 <td valign="top" width="50%">
 
-**📊 E2E QA Suite — SauceDemo**<br/>
-Professional end-to-end test suite: login → cart → checkout flow. pytest + **POM architecture**, data-driven parametrize, HTML failure reports with screenshots on every run.
+**🔌 Salesforce CRM Automation**<br/>
+Java + Selenium test suite built from scratch against **Salesforce CRM** using Page Object Model. TestNG runner, full regression suite, zero flakiness tolerance in production environment.
 
-`Python` `Selenium` `pytest` `Page Object Model` `HTML Reports`
+`Java` `Selenium` `TestNG` `Salesforce` `Page Object Model`
 
 </td>
 <td valign="top" width="50%">
@@ -200,7 +213,7 @@ I'm actively interviewing for **Software Engineer, QA Automation, and SDET** rol
 
 <br/>
 
-*"Automate the boring stuff. Engineer the important stuff."*
+*"If it's repetitive, I automate it. If it breaks, I find it first."*
 
 </div>
 
