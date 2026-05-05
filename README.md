@@ -5,7 +5,7 @@
 
 <!-- Typing animation -->
 <a href="https://oscar-leung.github.io">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=28&duration=3000&pause=1000&color=38BDF8&center=true&vCenter=true&width=700&height=60&lines=Hey%2C+I'm+Oscar+Leung+%F0%9F%91%8B;Software+Engineer+%7C+QA+Automation+%7C+SDET;5%2B+Years+Shipping+Reliable+Software;%F0%9F%9A%80+Spacecraft+%7C+Carrier+Apps+%7C+Cloud;Open+to+Work+%E2%80%94+Bay+Area+%26+Remote" alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=28&duration=3000&pause=1000&color=38BDF8&center=true&vCenter=true&width=700&height=60&lines=Hey%2C+I'm+Oscar+Leung+%F0%9F%91%8B;Software+Engineer+%7C+QA+Automation+%7C+SDET;5%2B+Years+Shipping+Reliable+Software;%F0%9F%9A%80+Spacecraft+%7C+Carrier+Apps+%7C+Cloud;%F0%9F%A4%96+AI+Slop+Needs+QA+%E2%80%94+Prompt+Engineer+for+QA;Open+to+Work+%E2%80%94+Bay+Area+%26+Remote" alt="Typing SVG" />
 </a>
 
 <br/>
@@ -214,6 +214,8 @@ I'm actively interviewing for **Software Engineer, QA Automation, and SDET** rol
 <br/>
 
 *"If it's repetitive, I automate it. If it breaks, I find it first."*
+
+*"More AI = more slop. Prompt Engineer for QA isn't a buzzword — it's the new seatbelt."*
 
 </div>
 
