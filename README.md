@@ -68,6 +68,22 @@
 
 ---
 
+### 🏆 Recent Achievements
+
+**MeritFirst AI Engineer — Verified** ✅  ·  *Completed June 2026*
+
+<a href="https://www.meritfirst.us/candidate/tests/d2d23d38-360f-4b4c-8b0e-6392ca1d31ad/result"><img src="https://img.shields.io/badge/MeritFirst-AI_Engineer_Verified-38bdf8?style=for-the-badge&logo=verified&logoColor=white" alt="MeritFirst AI Engineer Verified" /></a>
+
+A standardized AI Engineer assessment from MeritFirst's hiring network, scored across three modules:
+
+- **System walkthrough** &mdash; narrated a rubric-evaluation pipeline I shipped on Handshake AI's Project Hedgehog (multi-modal model comparison across frontier LLMs, structured scoring schema, drift detection on annotator agreement)
+- **Code review** &mdash; production-quality recommendations on an LLM eval Python script (correctness, observability, cost, safety)
+- **Ship plan** &mdash; "build it this week" scenario: scope cut, eval harness, rollout risks, what I'd defer
+
+> *"Verified · Shareable · Trusted"* — MeritFirst Hiring Network credential
+
+---
+
 ### 🛠️ Tech Stack
 
 <div align="center">
