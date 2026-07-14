@@ -1,0 +1,45 @@
+name: Splendor CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "splendor/**"
+      - ".github/workflows/splendor-ci.yml"
+  pull_request:
+    paths:
+      - "splendor/**"
+      - ".github/workflows/splendor-ci.yml"
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["18", "20", "22"]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Syntax-check all JS
+        working-directory: splendor
+        run: |
+          for f in *.js tests/*.js; do
+            node --check "$f"
+          done
+
+      - name: Run unit tests
+        working-directory: splendor
+        run: node --test tests/*.test.js
+
+      - name: Smoke-test the simulator
+        working-directory: splendor
+        run: node sim.js --games 30 --strategies balanced,greedy

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Splendor — Strategy Analytics</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  .analytics {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 16px;
+  }
+  .analytics h1 {
+    font-size: 28px;
+    background: linear-gradient(90deg, #f4c430, #38bdf8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 0 0 8px;
+  }
+  .panel {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .panel h2 { margin-top: 0; font-size: 18px; }
+  .form-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .form-row label { display: flex; align-items: center; gap: 6px; }
+  .seat-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  select {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+  input[type="number"] {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 90px;
+  }
+  .progress-bar {
+    background: var(--bg-2);
+    border-radius: 999px;
+    height: 8px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .progress-bar > div {
+    height: 100%;
+    background: linear-gradient(90deg, #38bdf8, #f4c430);
+    width: 0%;
+    transition: width 0.15s;
+  }
+  table.stats {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 12px;
+  }
+  table.stats th, table.stats td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+  table.stats th {
+    color: var(--text-dim);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+  table.stats td.num { text-align: right; font-family: ui-monospace, monospace; }
+  .winbar-cell { width: 200px; }
+  .winbar {
+    background: var(--bg-2);
+    border-radius: 4px;
+    height: 16px;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+  .winbar > div {
+    height: 100%;
+    background: linear-gradient(90deg, #4ea865, #38bdf8);
+  }
+  .winbar > span {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.5);
+  }
+  .action-bar {
+    display: flex;
+    height: 14px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--bg-2);
+    margin-top: 4px;
+    width: 220px;
+  }
+  .action-bar > div {
+    height: 100%;
+    transition: width 0.2s;
+  }
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; font-size: 11px; color: var(--text-dim); }
+  .legend span { display: inline-flex; align-items: center; gap: 4px; }
+  .legend .swatch { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+  .strategy-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+  }
+  .topbar a, .topbar h2 { text-decoration: none; }
+  .training-history {
+    max-height: 200px;
+    overflow-y: auto;
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px;
+    margin-top: 10px;
+  }
+  .training-history .row { padding: 2px 4px; }
+  .training-history .row.accepted { color: var(--success); font-weight: 700; }
+  .weights-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px 14px;
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    margin-top: 12px;
+  }
+  .weights-grid div { padding: 4px 0; border-bottom: 1px dashed var(--border); }
+  .weights-grid .key { color: var(--text-dim); }
+  .weights-grid .delta-up { color: var(--success); }
+  .weights-grid .delta-down { color: var(--danger); }
+</style>
+</head>
+<body>
+<div class="analytics">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h2 class="brand">Splendor · Analytics</h2>
+    </div>
+    <div class="topbar-right">
+      <a href="index.html" class="ghost-btn" style="text-decoration:none;">← Play Game</a>
+    </div>
+  </header>
+
+  <section class="panel">
+    <h2>Strategy Match</h2>
+    <p class="strategy-desc">Pit AI strategies against each other across many games. Seating rotates each round so first-move advantage averages out.</p>
+
+    <div id="strategy-list" class="strategy-desc"></div>
+
+    <div id="seats"></div>
+
+    <div class="form-row">
+      <label>Games <input type="number" id="games" value="200" min="10" max="5000" step="10" /></label>
+      <button id="run-match" class="primary-btn small">Run Match</button>
+      <button id="add-seat" class="ghost-btn small">+ Add Seat</button>
+      <button id="remove-seat" class="ghost-btn small">- Remove Seat</button>
+    </div>
+
+    <div class="progress-bar"><div id="match-progress"></div></div>
+
+    <div id="match-results"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Train the Balanced Heuristic</h2>
+    <p class="strategy-desc">Uses random-search hyperparameter tuning. Starting from default weights, it perturbs them, plays a mini-match against an opponent, and keeps the candidate if it does better. Watch the win rate climb over rounds.</p>
+
+    <div class="form-row">
+      <label>Opponent
+        <select id="train-opponent">
+          <option value="greedy" selected>Greedy</option>
+          <option value="points">Point Rusher</option>
+          <option value="nobleRusher">Noble Rusher</option>
+          <option value="random">Random</option>
+        </select>
+      </label>
+      <label>Rounds <input type="number" id="train-rounds" value="20" min="3" max="200" /></label>
+      <label>Games / round <input type="number" id="train-games" value="30" min="5" max="200" /></label>
+      <button id="run-train" class="primary-btn small">Run Training</button>
+    </div>
+
+    <div class="progress-bar"><div id="train-progress"></div></div>
+
+    <div id="train-results"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Strategic Insights</h2>
+    <p class="strategy-desc">Self-play a strategy many times and surface findings: first-mover advantage, action mix shifting from early to late game, which bonus colors winners stack, and tier-buy timing.</p>
+
+    <div class="form-row">
+      <label>Strategy
+        <select id="insights-strategy"></select>
+      </label>
+      <label>Players
+        <select id="insights-players">
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </label>
+      <label>Games <input type="number" id="insights-games" value="100" min="20" max="2000" step="10" /></label>
+      <button id="run-insights" class="primary-btn small">Run Analysis</button>
+    </div>
+    <div class="progress-bar"><div id="insights-progress"></div></div>
+    <div id="insights-results"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Single-Game Replay</h2>
+    <p class="strategy-desc">Step through one AI-vs-AI game move by move with on-screen reasoning.</p>
+    <div class="form-row">
+      <label>Player 1 <select id="replay-p1"></select></label>
+      <label>Player 2 <select id="replay-p2"></select></label>
+      <button id="replay-start" class="primary-btn small">New Replay</button>
+      <button id="replay-step" class="ghost-btn small" disabled>Next Move</button>
+      <button id="replay-auto" class="ghost-btn small" disabled>Auto-Play</button>
+    </div>
+    <div id="replay-status" class="strategy-desc"></div>
+    <div id="replay-board"></div>
+  </section>
+</div>
+
+<script src="data.js"></script>
+<script src="game.js"></script>
+<script src="ai.js"></script>
+<script src="sim.js"></script>
+<script src="analytics.js"></script>
+</body>
+</html>

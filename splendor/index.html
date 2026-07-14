@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Splendor — Web Edition</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="setup" class="screen">
+  <div class="setup-card">
+    <h1 class="title">Splendor</h1>
+    <p class="tagline">Renaissance gem merchants. First to <strong>15 prestige</strong> wins.</p>
+
+    <div class="setup-section">
+      <h3>Mode</h3>
+      <div class="radio-row">
+        <label><input type="radio" name="mode" value="solo" checked /> Solo vs. AI</label>
+        <label><input type="radio" name="mode" value="hotseat2" /> 2-Player Hot-Seat</label>
+        <label><input type="radio" name="mode" value="hotseat3" /> 3-Player Hot-Seat</label>
+        <label><input type="radio" name="mode" value="hotseat4" /> 4-Player Hot-Seat</label>
+      </div>
+    </div>
+
+    <div class="setup-section">
+      <h3>Your Name</h3>
+      <input id="player-name" type="text" maxlength="16" placeholder="Player 1" />
+    </div>
+
+    <button id="start-btn" class="primary-btn">Start Game</button>
+    <a href="analytics.html" class="ghost-btn" style="display:block; text-align:center; margin-top:10px; text-decoration:none;">📊 Strategy Analytics &amp; AI Training →</a>
+
+    <details class="rules">
+      <summary>How to play</summary>
+      <div class="rules-body">
+        <p>On your turn, take <strong>one</strong> of these actions:</p>
+        <ul>
+          <li><strong>Take 3 different</strong> gem tokens.</li>
+          <li><strong>Take 2 same-color</strong> tokens (only if that pile has 4+).</li>
+          <li><strong>Reserve</strong> a face-up card (or the top of a tier deck) and gain 1 gold wildcard if available. Max 3 reserved at a time.</li>
+          <li><strong>Buy</strong> a face-up or reserved card by paying its cost. Card bonuses you own reduce cost 1:1.</li>
+        </ul>
+        <p>If you finish your turn with 10+ tokens, discard down to 10.</p>
+        <p>Nobles visit automatically when you own the bonuses they require (worth 3 prestige).</p>
+        <p>First to 15 prestige triggers the final round; highest total wins (ties broken by fewest cards bought).</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div id="game" class="screen hidden">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h2 class="brand">Splendor</h2>
+      <span id="turn-indicator" class="pill"></span>
+    </div>
+    <div class="topbar-right">
+      <a href="analytics.html" class="ghost-btn" style="text-decoration:none; margin-right:8px;">📊 Analytics</a>
+      <button id="new-game-btn" class="ghost-btn">New Game</button>
+    </div>
+  </header>
+
+  <div class="board">
+    <section class="supply-col" aria-label="Gem supply and pending take">
+      <h3>Supply</h3>
+      <div id="gem-supply" class="gem-supply" role="list" aria-label="Available gem piles"></div>
+      <div class="pending-panel">
+        <div class="pending-label">Selected to take</div>
+        <div id="pending-gems" class="pending-gems" role="list" aria-live="polite"></div>
+        <div class="pending-actions">
+          <button id="confirm-take" class="primary-btn small" disabled aria-label="Confirm take (Enter)">Confirm Take</button>
+          <button id="cancel-take" class="ghost-btn small" disabled aria-label="Clear pending take (Escape)">Clear</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="market-col" aria-label="Card market and nobles">
+      <div id="nobles" class="nobles-row" role="list" aria-label="Available nobles"></div>
+      <div id="tiers" class="tiers" role="list" aria-label="Card tiers 1-3"></div>
+    </section>
+  </div>
+
+  <section id="players" class="players-row" aria-label="Player panels"></section>
+
+  <div id="status-bar" class="status-bar" role="status" aria-live="polite"></div>
+
+  <div id="modal-root"></div>
+  <div id="log" class="log"></div>
+</div>
+
+<script src="data.js"></script>
+<script src="game.js"></script>
+<script src="ai.js"></script>
+<script src="ui.js"></script>
+</body>
+</html>
