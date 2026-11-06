@@ -50,7 +50,7 @@
 
 <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Cloud.png" width="22" align="center" alt="Cloud"/> &nbsp;**Google Cloud certified ×5** — 24/7 headless cloud deployments
 
-<img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Hammer%20and%20Wrench.png" width="22" align="center" alt="Tools"/> &nbsp;**Currently building:** job hunt automation suite + AI-powered QA tools
+<img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Hammer%20and%20Wrench.png" width="22" align="center" alt="Tools"/> &nbsp;**Currently building:** Job Radar (AI job matching with a pytest eval suite) and Retrace (a macOS app with 972 automated tests)
 
 <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Round%20Pushpin.png" width="22" align="center" alt="Pin"/> &nbsp;**Bay Area, CA** · open to remote
 
@@ -143,40 +143,42 @@ A standardized AI Engineer assessment from MeritFirst's hiring network, scored a
 
 ### 🚀 Featured Projects
 
+Four pinned repos, same list as the [portfolio site](https://oscar-leung.github.io/#projects).
+
 <table>
 <tr>
 <td valign="top" width="50%">
 
-**🤖 [Job Hunt Automation Suite](https://github.com/oscar-leung/verbose-octo-carnival)**<br/>
-Python + Selenium platform applying to **50+ jobs/day** across LinkedIn, Handshake & Indeed. Runs **24/7 headless** on PythonAnywhere — 1,000+ listings scraped per run, Google Sheets live dashboard, anti-detection pacing.
+**📡 [Job Radar](https://github.com/oscar-leung/job-radar)**<br/>
+An LLM job-matching agent with a **pytest evaluation suite** that proves it works: precision 0.78 and recall 0.80 on 60 hand-labeled postings, four Claude models compared on accuracy and cost, and a judge model that catches fabricated resume claims. Runs daily on GitHub Actions and files matches into Notion.
 
-`Python` `Selenium` `Google Sheets API` `PythonAnywhere` `undetected-chromedriver`
+`Python` `pytest` `Claude API` `GitHub Actions` `Notion API`
 
 </td>
 <td valign="top" width="50%">
 
-**🔌 [QA Portfolio — SauceDemo E2E](https://github.com/oscar-leung/qa-portfolio)**<br/>
-Professional end-to-end test suite with **CI badge**: login → cart → checkout. pytest + **POM architecture**, data-driven parametrize, HTML failure reports with screenshots. GitHub Actions runs headless on every push.
+**🧪 [QA Portfolio](https://github.com/oscar-leung/qa-portfolio)**<br/>
+Two end-to-end suites against the same live e-commerce app, one in **Selenium + pytest** and one in **Playwright + TypeScript**, both on the Page Object Model. CI on every push, a nightly run that publishes the HTML reports, and two written case studies of bugs that only showed up in CI.
 
-`Python` `Selenium` `pytest` `GitHub Actions` `Page Object Model`
+`Python` `Selenium` `pytest` `Playwright` `TypeScript` `GitHub Actions`
 
 </td>
 </tr>
 <tr>
 <td valign="top" width="50%">
 
-**🔌 Salesforce CRM Automation**<br/>
-Java + Selenium test suite built from scratch against **Salesforce CRM** using Page Object Model. TestNG runner, full regression suite, zero flakiness tolerance in production environment.
+**📖 [Samuel & Kings](https://github.com/oscar-leung/bible-project)**<br/>
+An interactive study of 1-2 Samuel and 1-2 Kings: every chapter summarized, an SVG map with 81 places and 22 routes, three playable battles, a 49-person family tree and a 151-question quest. **Zero build step**, works offline from `file://`. [Live site](https://oscar-leung.github.io/bible-project/).
 
-`Java` `Selenium` `TestNG` `Salesforce` `Page Object Model`
+`HTML` `CSS` `JavaScript` `SVG` `GitHub Pages`
 
 </td>
 <td valign="top" width="50%">
 
-**☁️ Gatsby Cloud CMS Deployments**<br/>
-Full-stack sites via Gatsby Cloud with **Cosmic, DatoCMS & Contentful** headless CMS — modern JAMstack CI/CD pipelines built from scratch.
+**🚻 [Gotta Go](https://github.com/oscar-leung/restroom-finder)**<br/>
+A mobile-first PWA that finds public restrooms near you with accessibility and gender-neutral filters, community ratings and one-tap directions, on top of the Refuge Restrooms API and OpenStreetMap. Deployed to GitHub Pages on every push, with a Capacitor build for the app stores. [Live app](https://oscar-leung.github.io/restroom-finder/).
 
-`Gatsby` `Contentful` `DatoCMS` `CI/CD` `JAMstack`
+`React` `Vite` `Leaflet` `PWA` `Capacitor`
 
 </td>
 </tr>
